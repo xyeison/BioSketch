@@ -2,23 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   IconMicrophone,
-  IconMicrophoneOff,
   IconTrash,
   IconPlayerStop,
-  IconBacteria,
   IconBrain,
-  IconHeart,
-  IconShieldCheck
+  IconVirus
 } from '@tabler/icons-react';
 import './App.css';
 
 type VoiceStatus = 'inactive' | 'listening' | 'processing';
-
-interface DrawingElement {
-  id: string;
-  type: string;
-  timestamp: Date;
-}
 
 export default function App() {
   const [isListening, setIsListening] = useState(false);
@@ -391,7 +382,7 @@ export default function App() {
     <div className="app">
       <header className="header">
         <h1>
-          <IconBacteria size={32} className="icon-bacteria" />
+          <IconVirus size={32} className="icon-bacteria" />
           BioSketch - IA + Voz + Dibujo Automático
         </h1>
         <p>Habla sobre probióticos y mira cómo la IA dibuja automáticamente</p>
