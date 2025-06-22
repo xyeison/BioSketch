@@ -1,10 +1,10 @@
 # BioSketch 💊 - Asistente Inteligente de Probióticos
 
-**BioSketch** es una aplicación inteligente que combina reconocimiento de voz, inteligencia artificial y visualización automática para ayudar a los usuarios a entender cómo los probióticos OTC pueden mejorar su salud digestiva.
+**BioSketch** es una aplicación inteligente que combina reconocimiento de voz, inteligencia artificial y visualización automática para ayudar a los usuarios a entender cómo los probióticos OTC pueden mejorar su salud digestiva. Presentando a **Elsa**, tu asistente personal de salud digestiva.
 
 ## 🎯 Concepto
 
-Un asistente virtual especializado en **ProBioBalance Plus**, un probiótico de venta libre (OTC) que responde a consultas de salud digestiva mediante:
+**Elsa** es un asistente virtual especializado en **ProBioBalance Plus**, un probiótico de venta libre (OTC) que responde a consultas de salud digestiva mediante:
 - 🎤 **Reconocimiento de voz** para consultas naturales
 - 🤖 **IA especializada** que analiza síntomas y recomienda
 - 🎨 **Visualizaciones automáticas** que explican cómo funcionan los probióticos
@@ -73,17 +73,17 @@ npm run dev
 ### Ejemplo 1: Diarrea
 ```
 Usuario: "Hola, voy mucho al baño, como 5 veces al día"
-IA: "Entiendo que tienes problemas de diarrea. ProBioBalance Plus tiene 
-     efectividad alta para este problema. Las cepas de Lactobacillus 
-     ayudan a restaurar el equilibrio..."
+Elsa: "Entiendo que tienes problemas de diarrea. ProBioBalance Plus tiene 
+      efectividad alta para este problema. Las cepas de Lactobacillus 
+      ayudan a restaurar el equilibrio..."
 Visualiza: [Intestino] → [Bacterias buenas] → [Equilibrio restaurado]
 ```
 
 ### Ejemplo 2: Gases
 ```
 Usuario: "Me siento muy hinchado y con gases"
-IA: "Los gases pueden ser muy molestos. Nuestro probiótico reduce la 
-     producción de gases al mejorar la digestión..."
+Elsa: "Los gases pueden ser muy molestos. Nuestro probiótico reduce la 
+      producción de gases al mejorar la digestión..."
 Visualiza: [Fermentación] → [Reducción de gases] → [Confort digestivo]
 ```
 
