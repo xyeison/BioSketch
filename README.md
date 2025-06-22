@@ -1,33 +1,46 @@
-# BioSketch 🦠
+# BioSketch 💊 - Asistente Inteligente de Probióticos
 
-**BioSketch** es una aplicación interactiva que combina reconocimiento de voz, inteligencia artificial y visualización automática para enseñar conceptos de biología, especialmente sobre probióticos y el sistema digestivo.
+**BioSketch** es una aplicación inteligente que combina reconocimiento de voz, inteligencia artificial y visualización automática para ayudar a los usuarios a entender cómo los probióticos OTC pueden mejorar su salud digestiva.
 
-## 🚀 Características
+## 🎯 Concepto
 
-- **Reconocimiento de Voz en Español**: Habla naturalmente y la app detecta conceptos clave
-- **Dibujo Automático con IA**: Visualiza automáticamente bacterias, intestinos, procesos de fermentación
-- **Interfaz Intuitiva**: Diseño moderno y responsivo con animaciones fluidas
-- **Educativo**: Perfecto para aprender sobre probióticos, microbiota y salud digestiva
+Un asistente virtual especializado en **ProBioBalance Plus**, un probiótico de venta libre (OTC) que responde a consultas de salud digestiva mediante:
+- 🎤 **Reconocimiento de voz** para consultas naturales
+- 🤖 **IA especializada** que analiza síntomas y recomienda
+- 🎨 **Visualizaciones automáticas** que explican cómo funcionan los probióticos
+- 🗣️ **Respuestas por voz** para una experiencia conversacional completa
 
-## 🎯 Palabras Clave Detectadas
+## 🚀 Características Principales
 
-- `lactobacilo` - Dibuja bacterias Lactobacillus
-- `bifidobacteria` - Dibuja bacterias Bifidobacterium  
-- `intestino` - Visualiza el intestino delgado con vellosidades
-- `fermentación` - Muestra el proceso de fermentación láctica
-- `beneficios` - Ilustra beneficios para la salud
-- `digestión` - Proceso digestivo completo
-- `microbiota` - Ecosistema de microorganismos
-- `probióticos` - Visualización completa de probióticos
+### Para el Usuario
+- **Consulta por voz**: "Hola, voy mucho al baño"
+- **Análisis inteligente**: Detecta síntomas como diarrea, estreñimiento, gases
+- **Respuesta personalizada**: Explica cómo el probiótico puede ayudar
+- **Visualización educativa**: Dibuja en tiempo real el proceso digestivo
+
+### Síntomas que Detecta
+- 💩 **Diarrea**: "voy mucho al baño", "líquido", "suelto"
+- 🚫 **Estreñimiento**: "no puedo ir", "estreñido", "duro"
+- 💨 **Gases**: "hinchado", "inflamado", "gases"
+- 🛡️ **Defensas bajas**: "me enfermo seguido", "gripe", "defensas"
+
+### Información del Producto
+- **Nombre**: ProBioBalance Plus
+- **Cepas**: 
+  - Lactobacillus acidophilus (5 billones UFC)
+  - Bifidobacterium lactis (3 billones UFC)  
+  - Lactobacillus rhamnosus (2 billones UFC)
+- **Dosis**: 1 cápsula al día con alimentos
+- **Tipo**: OTC (Over The Counter) - Venta libre
 
 ## 🛠️ Tecnologías
 
 - **React 18** con TypeScript
 - **Vite** para desarrollo rápido
-- **Framer Motion** para animaciones
-- **Web Speech API** para reconocimiento de voz
-- **Canvas API** para dibujo dinámico
-- **Tabler Icons** para iconografía
+- **Framer Motion** para animaciones fluidas
+- **Web Speech API** para voz bidireccional
+- **Canvas API** para visualizaciones dinámicas
+- **Tabler Icons** para iconografía médica
 
 ## 📦 Instalación
 
@@ -45,33 +58,63 @@ npm install
 npm run dev
 ```
 
-## 🎨 Uso
+## 🎨 Cómo Funciona
 
-1. Haz clic en "Comenzar Conversación" para activar el micrófono
-2. Habla sobre probióticos usando las palabras clave
-3. Observa cómo la IA dibuja automáticamente los conceptos
-4. Usa las frases sugeridas si prefieres no usar el micrófono
+1. **Consulta**: El usuario describe sus síntomas por voz
+2. **Análisis**: La IA detecta palabras clave y síntomas
+3. **Respuesta**: 
+   - Explicación verbal de cómo el probiótico ayuda
+   - Dibujos automáticos del proceso digestivo
+   - Recomendación de dosis personalizada
+4. **Educación**: Visualiza bacterias buenas, intestinos, equilibrio
+
+## 📱 Casos de Uso
+
+### Ejemplo 1: Diarrea
+```
+Usuario: "Hola, voy mucho al baño, como 5 veces al día"
+IA: "Entiendo que tienes problemas de diarrea. ProBioBalance Plus tiene 
+     efectividad alta para este problema. Las cepas de Lactobacillus 
+     ayudan a restaurar el equilibrio..."
+Visualiza: [Intestino] → [Bacterias buenas] → [Equilibrio restaurado]
+```
+
+### Ejemplo 2: Gases
+```
+Usuario: "Me siento muy hinchado y con gases"
+IA: "Los gases pueden ser muy molestos. Nuestro probiótico reduce la 
+     producción de gases al mejorar la digestión..."
+Visualiza: [Fermentación] → [Reducción de gases] → [Confort digestivo]
+```
 
 ## 🌐 Compatibilidad
 
-- Chrome/Edge (recomendado para reconocimiento de voz)
-- Firefox, Safari (funciona con frases sugeridas)
-- Responsive para móviles y tablets
+- ✅ Chrome/Edge (óptimo - voz completa)
+- ✅ Firefox (funciona con botones de ejemplo)
+- ✅ Safari (funciona con botones de ejemplo)
+- ✅ Móviles y tablets (responsive)
 
-## 📝 Licencia
+## ⚠️ Disclaimer
 
-MIT License - Siéntete libre de usar este proyecto para fines educativos
+- Producto OTC de venta libre
+- No sustituye consulta médica profesional
+- Consulte a su médico si los síntomas persisten
+- Solo para fines educativos e informativos
 
 ## 🤝 Contribuciones
 
 Las contribuciones son bienvenidas! Por favor:
 
 1. Fork el proyecto
-2. Crea tu feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la branch (`git push origin feature/AmazingFeature`)
+2. Crea tu feature branch (`git checkout -b feature/NuevaCaracteristica`)
+3. Commit tus cambios (`git commit -m 'Add: Nueva característica'`)
+4. Push a la branch (`git push origin feature/NuevaCaracteristica`)
 5. Abre un Pull Request
+
+## 📄 Licencia
+
+MIT License - Úsalo libremente para proyectos educativos y comerciales
 
 ---
 
-Desarrollado con ❤️ para la educación en biología y salud
+Desarrollado con ❤️ para mejorar la salud digestiva mediante tecnología
