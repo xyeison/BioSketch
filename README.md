@@ -37,6 +37,7 @@
 
 - **React 18** con TypeScript
 - **Vite** para desarrollo rápido
+- **OpenAI GPT-3.5** para respuestas inteligentes
 - **Framer Motion** para animaciones fluidas
 - **Web Speech API** para voz bidireccional
 - **Canvas API** para visualizaciones dinámicas
@@ -54,19 +55,29 @@ cd BioSketch
 # Instalar dependencias
 npm install
 
+# Configurar OpenAI API Key
+cp .env.example .env
+# Edita .env y añade tu API key de OpenAI
+
 # Iniciar en modo desarrollo
 npm run dev
 ```
 
+### 🔑 Configuración de OpenAI
+
+1. Obtén tu API key en [OpenAI Platform](https://platform.openai.com/api-keys)
+2. Copia `.env.example` a `.env`
+3. Reemplaza `VITE_OPENAI_API_KEY` con tu clave API real
+
 ## 🎨 Cómo Funciona
 
 1. **Consulta**: El usuario describe sus síntomas por voz
-2. **Análisis**: La IA detecta palabras clave y síntomas
-3. **Respuesta**: 
-   - Explicación verbal de cómo el probiótico ayuda
-   - Dibujos automáticos del proceso digestivo
-   - Recomendación de dosis personalizada
-4. **Educación**: Visualiza bacterias buenas, intestinos, equilibrio
+2. **Procesamiento con ChatGPT**: La IA de OpenAI analiza la consulta y genera una respuesta personalizada
+3. **Respuesta Inteligente**: 
+   - ChatGPT explica cómo ProBioBalance Plus puede ayudar
+   - Selecciona automáticamente los dibujos relevantes
+   - Proporciona información científica en lenguaje simple
+4. **Visualización Sincronizada**: Los dibujos se muestran mientras Elsa habla
 
 ## 📱 Casos de Uso
 

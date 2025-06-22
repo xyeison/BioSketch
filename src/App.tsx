@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IconMicrophone, IconMicrophoneOff } from '@tabler/icons-react';
+import { getAIResponse } from './services/openai';
 import './App.css';
 
 type VoiceStatus = 'inactive' | 'listening' | 'processing' | 'responding';
@@ -139,16 +140,20 @@ export default function App() {
     }
   };
 
-  const processUserInput = (text: string) => {
+  const processUserInput = async (text: string) => {
     setMessages(prev => [...prev, { type: 'user', text }]);
     setVoiceStatus('processing');
     
-    // Detectar síntoma
-    const symptom = detectSymptom(text);
-    
-    setTimeout(() => {
+    try {
+      // Obtener respuesta de OpenAI
+      const aiResponse = await getAIResponse(text);
+      processAIResponse(aiResponse.response, aiResponse.drawings);
+    } catch (error) {
+      console.error('Error procesando entrada:', error);
+      // Fallback al sistema anterior
+      const symptom = detectSymptom(text);
       processResponse(symptom);
-    }, 500);
+    }
   };
 
   const detectSymptom = (text: string): string => {
@@ -182,6 +187,30 @@ export default function App() {
     for (let i = 0; i < response.drawings.length; i++) {
       await new Promise(resolve => setTimeout(resolve, 2000));
       drawElement(response.drawings[i]);
+    }
+    
+    setTimeout(() => {
+      setVoiceStatus('inactive');
+    }, 2000);
+  };
+
+  const processAIResponse = async (responseText: string, drawings: string[]) => {
+    setMessages(prev => [...prev, { type: 'ai', text: responseText }]);
+    setVoiceStatus('responding');
+    
+    // Limpiar canvas
+    clearCanvas();
+    
+    // Hablar
+    if (synthRef.current && 'speechSynthesis' in window) {
+      synthRef.current.text = responseText;
+      window.speechSynthesis.speak(synthRef.current);
+    }
+    
+    // Dibujar secuencia
+    for (let i = 0; i < drawings.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      drawElement(drawings[i]);
     }
     
     setTimeout(() => {
