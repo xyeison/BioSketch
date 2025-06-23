@@ -147,9 +147,9 @@ export default function App() {
         );
         
         // Si encontramos una voz preferida, usarla
-        if (preferredVoices.length > 0) {
+        if (preferredVoices.length > 0 && synthRef.current) {
           synthRef.current.voice = preferredVoices[0];
-        } else if (spanishVoices.length > 0) {
+        } else if (spanishVoices.length > 0 && synthRef.current) {
           // Si no, usar cualquier voz en español
           synthRef.current.voice = spanishVoices[0];
         }
