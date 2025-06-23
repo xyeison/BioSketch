@@ -23,22 +23,18 @@ export default function App() {
   const [currentDrawing, setCurrentDrawing] = useState('probiotico');
   const [timelineEvents, setTimelineEvents] = useState<Array<{time: number, drawing: string}>>([]);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const [useOpenAIVoice, setUseOpenAIVoice] = useState(true);
-  const [selectedVoice, setSelectedVoice] = useState(OPENAI_VOICES.nova);
   
   const recognitionRef = useRef<any>(null);
-  const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     setupVoiceRecognition();
-    setupSpeechSynthesis();
     
     // Mensaje inicial
-    setTimeout(() => {
+    setTimeout(async () => {
       const initialMessage = "¡Hola! Soy Elsa, tu asistente de salud digestiva. Cuéntame qué molestias tienes y te explicaré cómo nuestro probiótico puede ayudarte.";
       setMessages([{ type: 'ai', text: initialMessage }]);
-      speakText(initialMessage);
+      await speakText(initialMessage);
     }, 1000);
   }, []);
 
@@ -84,48 +80,6 @@ export default function App() {
     }
   };
 
-  const setupSpeechSynthesis = () => {
-    if ('speechSynthesis' in window) {
-      synthRef.current = new SpeechSynthesisUtterance();
-      synthRef.current.lang = 'es-ES';
-      synthRef.current.rate = 0.95;
-      synthRef.current.pitch = 1.1;
-      synthRef.current.volume = 0.9;
-      
-      // Intentar obtener una voz femenina más natural
-      const setVoice = () => {
-        const voices = window.speechSynthesis.getVoices();
-        
-        // Buscar voces en español
-        const spanishVoices = voices.filter(voice => voice.lang.startsWith('es'));
-        
-        // Priorizar voces femeninas y naturales
-        const preferredVoices = spanishVoices.filter(voice => 
-          voice.name.toLowerCase().includes('female') ||
-          voice.name.toLowerCase().includes('mujer') ||
-          voice.name.toLowerCase().includes('paulina') ||
-          voice.name.toLowerCase().includes('monica') ||
-          voice.name.toLowerCase().includes('helena') ||
-          voice.name.toLowerCase().includes('laura')
-        );
-        
-        // Si encontramos una voz preferida, usarla
-        if (preferredVoices.length > 0 && synthRef.current) {
-          synthRef.current.voice = preferredVoices[0];
-        } else if (spanishVoices.length > 0 && synthRef.current) {
-          // Si no, usar cualquier voz en español
-          synthRef.current.voice = spanishVoices[0];
-        }
-      };
-      
-      // Las voces pueden no estar disponibles inmediatamente
-      if (window.speechSynthesis.getVoices().length > 0) {
-        setVoice();
-      } else {
-        window.speechSynthesis.addEventListener('voiceschanged', setVoice);
-      }
-    }
-  };
 
   const toggleListening = () => {
     if (isListening) {
@@ -171,65 +125,42 @@ export default function App() {
   };
 
   const speakText = async (text: string) => {
-    if (useOpenAIVoice) {
-      try {
-        // Generar audio con OpenAI
-        const audioUrl = await generateSpeechUrl(text, selectedVoice);
-        
-        // Crear elemento de audio
-        if (audioRef.current) {
-          audioRef.current.pause();
-          URL.revokeObjectURL(audioRef.current.src);
-        }
-        
-        const audio = new Audio(audioUrl);
-        audioRef.current = audio;
-        
-        audio.onplay = () => {
-          setIsAudioPlaying(true);
-        };
-        
-        audio.onended = () => {
-          setIsAudioPlaying(false);
-          setTimeout(() => {
-            setVoiceStatus('inactive');
-          }, 500);
-          URL.revokeObjectURL(audioUrl);
-        };
-        
-        audio.onerror = () => {
-          console.error('Error reproduciendo audio de OpenAI');
-          // Fallback a síntesis de voz del navegador
-          speakWithBrowserTTS(text);
-        };
-        
-        await audio.play();
-      } catch (error) {
-        console.error('Error con OpenAI TTS:', error);
-        // Fallback a síntesis de voz del navegador
-        speakWithBrowserTTS(text);
-      }
-    } else {
-      speakWithBrowserTTS(text);
-    }
-  };
-  
-  const speakWithBrowserTTS = (text: string) => {
-    if (synthRef.current && 'speechSynthesis' in window) {
-      synthRef.current.text = text;
+    try {
+      // Siempre usar OpenAI con voz Nova
+      const audioUrl = await generateSpeechUrl(text, OPENAI_VOICES.nova);
       
-      synthRef.current.onstart = () => {
+      // Crear elemento de audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        URL.revokeObjectURL(audioRef.current.src);
+      }
+      
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.onplay = () => {
         setIsAudioPlaying(true);
       };
       
-      synthRef.current.onend = () => {
+      audio.onended = () => {
         setIsAudioPlaying(false);
         setTimeout(() => {
           setVoiceStatus('inactive');
         }, 500);
+        URL.revokeObjectURL(audioUrl);
       };
       
-      window.speechSynthesis.speak(synthRef.current);
+      audio.onerror = () => {
+        console.error('Error reproduciendo audio de OpenAI');
+        setIsAudioPlaying(false);
+        setVoiceStatus('inactive');
+      };
+      
+      await audio.play();
+    } catch (error) {
+      console.error('Error con OpenAI TTS:', error);
+      setIsAudioPlaying(false);
+      setVoiceStatus('inactive');
     }
   };
 
@@ -243,30 +174,6 @@ export default function App() {
               <h2>{PROBIOTIC_INFO.botName}</h2>
               <p>Asistente de Salud Digestiva</p>
             </div>
-          </div>
-          
-          <div className="voice-settings">
-            <label className="voice-toggle">
-              <input
-                type="checkbox"
-                checked={useOpenAIVoice}
-                onChange={(e) => setUseOpenAIVoice(e.target.checked)}
-              />
-              <span>Usar voz HD de OpenAI</span>
-            </label>
-            
-            {useOpenAIVoice && (
-              <select
-                value={selectedVoice}
-                onChange={(e) => setSelectedVoice(e.target.value as any)}
-                className="voice-selector"
-              >
-                <option value={OPENAI_VOICES.nova}>Nova (Femenina joven)</option>
-                <option value={OPENAI_VOICES.shimmer}>Shimmer (Femenina suave)</option>
-                <option value={OPENAI_VOICES.alloy}>Alloy (Neutral)</option>
-                <option value={OPENAI_VOICES.fable}>Fable (Británica)</option>
-              </select>
-            )}
           </div>
           
           <div className="conversation-area">

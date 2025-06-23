@@ -116,10 +116,10 @@ export async function generateSpeech(
 ): Promise<ArrayBuffer> {
   try {
     const response = await openai.audio.speech.create({
-      model: "tts-1",
+      model: "tts-1-hd",  // Modelo HD para mejor calidad
       voice: voice,
       input: text,
-      speed: 0.95
+      speed: 1.0  // Velocidad normal para español
     });
 
     // Convertir la respuesta a ArrayBuffer
