@@ -62,6 +62,17 @@ export default function AudioTimeline({ isPlaying, events, onDrawingChange, audi
   return (
     <div className="audio-timeline">
       <div className="timeline-container">
+        <div className="timeline-labels">
+          {events.map((event, index) => (
+            <div
+              key={index}
+              className="timeline-label"
+              style={{ left: `${(event.time / duration) * 100}%` }}
+            >
+              <span>{event.drawing}</span>
+            </div>
+          ))}
+        </div>
         <div className="timeline-track">
           <div 
             className="timeline-progress" 
@@ -70,17 +81,17 @@ export default function AudioTimeline({ isPlaying, events, onDrawingChange, audi
           {events.map((event, index) => (
             <div
               key={index}
-              className="timeline-marker"
+              className={`timeline-marker ${currentTime >= event.time ? 'active' : ''}`}
               style={{ left: `${(event.time / duration) * 100}%` }}
-              title={event.drawing}
             />
           ))}
         </div>
         <div className="timeline-time">
-          {currentTime.toFixed(1)}s / {duration.toFixed(1)}s
+          <span className="current-time">{currentTime.toFixed(1)}s</span>
+          <span className="separator">/</span>
+          <span className="total-time">{duration.toFixed(1)}s</span>
         </div>
       </div>
-      
     </div>
   );
 }
