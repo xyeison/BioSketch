@@ -10,9 +10,8 @@ import {
   PerspectiveCamera,
   MeshTransmissionMaterial
 } from '@react-three/drei';
-import { EffectComposer, Bloom, ChromaticAberration, Vignette } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
-import { BlendFunction, ChromaticAberrationEffect } from 'postprocessing';
 
 interface BacteriaProps {
   position: [number, number, number];
@@ -361,16 +360,10 @@ export default function Scene3D({ currentDrawing, onSceneReady }: Scene3DProps) 
             intensity={0.5}
             luminanceThreshold={0.5}
             luminanceSmoothing={0.9}
-            blendFunction={BlendFunction.SCREEN}
-          />
-          <ChromaticAberration
-            blendFunction={BlendFunction.NORMAL}
-            offset={new THREE.Vector2(0.0005, 0.0005)}
           />
           <Vignette
             offset={0.3}
             darkness={0.5}
-            blendFunction={BlendFunction.NORMAL}
           />
         </EffectComposer>
       </Canvas>
