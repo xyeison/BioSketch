@@ -8,6 +8,10 @@ const openai = new OpenAI({
 export interface AIResponse {
   response: string;
   drawings: string[];
+  timeline?: Array<{
+    time: number;
+    drawing: string;
+  }>;
 }
 
 const SYSTEM_PROMPT = `Eres Elsa, una asistente de salud digestiva especializada en el probiótico ProBioBalance Plus.
@@ -22,7 +26,8 @@ INSTRUCCIONES:
 1. Escucha los síntomas del usuario y responde de manera empática y profesional
 2. Explica cómo ProBioBalance Plus puede ayudar con esos síntomas específicos
 3. Incluye información científica pero en lenguaje simple
-4. IMPORTANTE: Al final de tu respuesta, incluye una línea que diga "DIBUJOS:" seguida de los elementos a dibujar separados por comas
+4. Estructura tu respuesta en 2-3 párrafos cortos
+5. IMPORTANTE: Al final, incluye "TIMELINE:" con eventos en formato: [tiempo_en_segundos]:[dibujo]
 
 ELEMENTOS DE DIBUJO DISPONIBLES:
 - probiotico: Cápsula del probiótico
@@ -30,13 +35,15 @@ ELEMENTOS DE DIBUJO DISPONIBLES:
 - intestino_lento: Intestino con tránsito lento
 - bacterias: Bacterias beneficiosas
 - equilibrio: Balanza equilibrada
-- movimiento: Intestino con movimiento regular
-- gases: Estómago con gases
-- alivio: Estómago aliviado
 
 Ejemplo de respuesta:
-"Entiendo que tienes problemas digestivos. ProBioBalance Plus puede ayudarte porque... [explicación]. 
-DIBUJOS: intestino, bacterias, equilibrio"`;
+"Entiendo que tienes problemas digestivos. Déjame explicarte cómo funciona.
+
+ProBioBalance Plus contiene bacterias beneficiosas que restauran el equilibrio. Cuando tomas la cápsula, estas bacterias viajan a tu intestino.
+
+Allí, las bacterias buenas combaten a las malas y restauran tu flora intestinal.
+
+TIMELINE: 0:probiotico, 2:intestino, 4:bacterias, 6:equilibrio"`;
 
 export async function getAIResponse(userInput: string): Promise<AIResponse> {
   try {
@@ -52,19 +59,35 @@ export async function getAIResponse(userInput: string): Promise<AIResponse> {
 
     const fullResponse = completion.choices[0].message.content || '';
     
-    // Extraer los dibujos de la respuesta
-    const drawingsMatch = fullResponse.match(/DIBUJOS:\s*(.+)$/);
-    let drawings: string[] = ['probiotico']; // Default
+    // Extraer timeline de la respuesta
+    const timelineMatch = fullResponse.match(/TIMELINE:\s*(.+)$/);
     let response = fullResponse;
+    let timeline: Array<{time: number, drawing: string}> = [];
+    let drawings: string[] = [];
     
-    if (drawingsMatch) {
-      // Remover la línea de DIBUJOS de la respuesta
-      response = fullResponse.replace(/\nDIBUJOS:\s*.+$/, '').trim();
-      // Parsear los dibujos
-      drawings = drawingsMatch[1].split(',').map(d => d.trim()).filter(d => d);
+    if (timelineMatch) {
+      // Remover la línea de TIMELINE de la respuesta
+      response = fullResponse.replace(/\nTIMELINE:\s*.+$/, '').trim();
+      
+      // Parsear los eventos del timeline
+      const events = timelineMatch[1].split(',').map(e => e.trim());
+      timeline = events.map(event => {
+        const [time, drawing] = event.split(':');
+        return {
+          time: parseFloat(time),
+          drawing: drawing.trim()
+        };
+      });
+      
+      // Extraer solo los dibujos únicos para compatibilidad
+      drawings = [...new Set(timeline.map(t => t.drawing))];
+    } else {
+      // Fallback si no hay timeline
+      drawings = ['probiotico'];
+      timeline = [{ time: 0, drawing: 'probiotico' }];
     }
 
-    return { response, drawings };
+    return { response, drawings, timeline };
   } catch (error) {
     console.error('Error al obtener respuesta de OpenAI:', error);
     // Fallback a respuesta predefinida
