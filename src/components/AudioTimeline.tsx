@@ -81,57 +81,6 @@ export default function AudioTimeline({ isPlaying, events, onDrawingChange, audi
         </div>
       </div>
       
-      <style jsx>{`
-        .audio-timeline {
-          padding: 20px;
-          background: rgba(255, 255, 255, 0.9);
-          border-radius: 10px;
-          margin: 20px 0;
-        }
-        
-        .timeline-container {
-          position: relative;
-        }
-        
-        .timeline-track {
-          height: 8px;
-          background: #e0e0e0;
-          border-radius: 4px;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .timeline-progress {
-          height: 100%;
-          background: linear-gradient(90deg, #4CAF50 0%, #2196F3 100%);
-          border-radius: 4px;
-          transition: width 0.1s linear;
-        }
-        
-        .timeline-marker {
-          position: absolute;
-          top: -4px;
-          width: 16px;
-          height: 16px;
-          background: #FF6B6B;
-          border-radius: 50%;
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          cursor: pointer;
-          transition: transform 0.2s;
-        }
-        
-        .timeline-marker:hover {
-          transform: scale(1.2);
-        }
-        
-        .timeline-time {
-          margin-top: 10px;
-          font-size: 14px;
-          color: #666;
-          text-align: center;
-        }
-      `}</style>
     </div>
   );
 }

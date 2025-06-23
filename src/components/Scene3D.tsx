@@ -1,8 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, Box, MeshDistortMaterial, Float, Text3D, Center } from '@react-three/drei';
+import { OrbitControls, Sphere, MeshDistortMaterial, Float } from '@react-three/drei';
 import * as THREE from 'three';
-import gsap from 'gsap';
 
 interface BacteriaProps {
   position: [number, number, number];
