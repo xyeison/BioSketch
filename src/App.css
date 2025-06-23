@@ -147,7 +147,7 @@ body {
 
 /* Panel de visualización */
 .visualization-panel {
-  background: transparent;
+  background: #000814;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -155,7 +155,18 @@ body {
   padding: 40px;
   position: relative;
   background-image: 
-    radial-gradient(circle at center, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 50%, rgba(240, 147, 251, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at center, rgba(30, 30, 46, 0.5) 0%, transparent 100%);
+}
+
+.visualization-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
 }
 
 /* Botón de micrófono */

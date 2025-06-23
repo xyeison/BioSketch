@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IconMicrophone, IconMicrophoneOff } from '@tabler/icons-react';
 import { getAIResponse, generateSpeechUrl, OPENAI_VOICES } from './services/openai';
-import Scene3D from './components/Scene3D';
+import DynamicVisualization from './components/DynamicVisualization';
 import AudioTimeline from './components/AudioTimeline';
 import './App.css';
 
@@ -206,16 +206,18 @@ export default function App() {
         </div>
         
         <div className="visualization-panel">
-          <Scene3D currentDrawing={currentDrawing} />
-          
-          {timelineEvents.length > 0 && (
-            <AudioTimeline
-              isPlaying={isAudioPlaying}
-              events={timelineEvents}
-              onDrawingChange={setCurrentDrawing}
-              audioText={messages[messages.length - 1]?.text || ''}
-            />
-          )}
+          <div className="visualization-container">
+            <DynamicVisualization scene={currentDrawing} />
+            
+            {timelineEvents.length > 0 && (
+              <AudioTimeline
+                isPlaying={isAudioPlaying}
+                events={timelineEvents}
+                onDrawingChange={setCurrentDrawing}
+                audioText={messages[messages.length - 1]?.text || ''}
+              />
+            )}
+          </div>
           
           <button
             className={`mic-button ${voiceStatus}`}

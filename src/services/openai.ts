@@ -43,10 +43,21 @@ INSTRUCCIONES:
 
 ELEMENTOS DE DIBUJO DISPONIBLES:
 - probiotico: Cápsula del probiótico
-- intestino: Intestino normal
+- intestino: Intestino sano
+- intestino_inflamado: Intestino con inflamación
 - intestino_lento: Intestino con tránsito lento
-- bacterias: Bacterias beneficiosas
+- bacterias_buenas: Bacterias beneficiosas verdes
+- bacterias_malas: Bacterias dañinas rojas
+- batalla: Batalla entre bacterias
 - equilibrio: Balanza equilibrada
+- digestion: Proceso digestivo
+- estomago: Estómago
+- gases: Burbujas de gas
+- alivio: Sensación de alivio
+- defensas: Sistema inmune
+- nutrientes: Absorción de nutrientes
+- reloj: Tiempo/regularidad
+- escudo: Protección
 
 Ejemplo de respuesta:
 "Entiendo que tienes problemas digestivos. Déjame explicarte cómo funciona.
