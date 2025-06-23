@@ -125,8 +125,42 @@ export default function App() {
     if ('speechSynthesis' in window) {
       synthRef.current = new SpeechSynthesisUtterance();
       synthRef.current.lang = 'es-ES';
-      synthRef.current.rate = 0.9;
-      synthRef.current.pitch = 1.0;
+      synthRef.current.rate = 0.95;
+      synthRef.current.pitch = 1.1;
+      synthRef.current.volume = 0.9;
+      
+      // Intentar obtener una voz femenina más natural
+      const setVoice = () => {
+        const voices = window.speechSynthesis.getVoices();
+        
+        // Buscar voces en español
+        const spanishVoices = voices.filter(voice => voice.lang.startsWith('es'));
+        
+        // Priorizar voces femeninas y naturales
+        const preferredVoices = spanishVoices.filter(voice => 
+          voice.name.toLowerCase().includes('female') ||
+          voice.name.toLowerCase().includes('mujer') ||
+          voice.name.toLowerCase().includes('paulina') ||
+          voice.name.toLowerCase().includes('monica') ||
+          voice.name.toLowerCase().includes('helena') ||
+          voice.name.toLowerCase().includes('laura')
+        );
+        
+        // Si encontramos una voz preferida, usarla
+        if (preferredVoices.length > 0) {
+          synthRef.current.voice = preferredVoices[0];
+        } else if (spanishVoices.length > 0) {
+          // Si no, usar cualquier voz en español
+          synthRef.current.voice = spanishVoices[0];
+        }
+      };
+      
+      // Las voces pueden no estar disponibles inmediatamente
+      if (window.speechSynthesis.getVoices().length > 0) {
+        setVoice();
+      } else {
+        window.speechSynthesis.addEventListener('voiceschanged', setVoice);
+      }
     }
   };
 
@@ -224,57 +258,120 @@ export default function App() {
 
     const centerX = 400;
     const centerY = 200;
-
-    switch(element) {
-      case 'probiotico':
-        drawPill(ctx, centerX, centerY);
-        break;
-      case 'intestino':
-        drawIntestine(ctx, centerX, centerY);
-        break;
-      case 'intestino_lento':
-        drawSlowIntestine(ctx, centerX, centerY);
-        break;
-      case 'bacterias':
-        drawBacteria(ctx, centerX, centerY);
-        break;
-      case 'equilibrio':
-        drawBalance(ctx, centerX, centerY);
-        break;
-      case 'movimiento':
-        drawMovement(ctx, centerX, centerY);
-        break;
-      case 'gases':
-        drawGas(ctx, centerX, centerY);
-        break;
-      case 'alivio':
-        drawRelief(ctx, centerX, centerY);
-        break;
-    }
+    
+    // Animación de entrada con fade
+    let alpha = 0;
+    const fadeIn = () => {
+      if (alpha < 1) {
+        alpha += 0.05;
+        ctx.globalAlpha = alpha;
+        
+        // Limpiar y redibujar con nueva opacidad
+        clearCanvas();
+        
+        // Redibujar elementos previos con opacidad completa
+        ctx.globalAlpha = 1;
+        // TODO: Mantener track de elementos previos
+        
+        // Dibujar elemento actual con fade
+        ctx.globalAlpha = alpha;
+        
+        switch(element) {
+          case 'probiotico':
+            drawPill(ctx, centerX, centerY);
+            break;
+          case 'intestino':
+            drawIntestine(ctx, centerX, centerY);
+            break;
+          case 'intestino_lento':
+            drawSlowIntestine(ctx, centerX, centerY);
+            break;
+          case 'bacterias':
+            drawBacteria(ctx, centerX, centerY);
+            break;
+          case 'equilibrio':
+            drawBalance(ctx, centerX, centerY);
+            break;
+          case 'movimiento':
+            drawMovement(ctx, centerX, centerY);
+            break;
+          case 'gases':
+            drawGas(ctx, centerX, centerY);
+            break;
+          case 'alivio':
+            drawRelief(ctx, centerX, centerY);
+            break;
+        }
+        
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(fadeIn);
+      }
+    };
+    
+    fadeIn();
   };
 
   const drawPill = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
     ctx.save();
     
-    // Cápsula
-    ctx.fillStyle = '#FF6B6B';
+    // Sombra
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 10;
+    
+    // Cápsula con gradientes
+    const topGradient = ctx.createLinearGradient(x - 40, y - 40, x + 40, y);
+    topGradient.addColorStop(0, '#FF8A80');
+    topGradient.addColorStop(0.5, '#FF6B6B');
+    topGradient.addColorStop(1, '#FF5252');
+    
+    const bottomGradient = ctx.createLinearGradient(x - 40, y, x + 40, y + 40);
+    bottomGradient.addColorStop(0, '#64E9E4');
+    bottomGradient.addColorStop(0.5, '#4ECDC4');
+    bottomGradient.addColorStop(1, '#26A69A');
+    
+    // Parte superior
+    ctx.fillStyle = topGradient;
     ctx.beginPath();
-    ctx.arc(x, y, 40, Math.PI, 0);
+    ctx.arc(x, y, 45, Math.PI, 0);
     ctx.fill();
     
-    ctx.fillStyle = '#4ECDC4';
+    // Parte inferior
+    ctx.fillStyle = bottomGradient;
     ctx.beginPath();
-    ctx.arc(x, y, 40, 0, Math.PI);
+    ctx.arc(x, y, 45, 0, Math.PI);
     ctx.fill();
     
-    // Texto
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 24px Inter';
+    // Línea divisoria con brillo
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(x - 45, y);
+    ctx.lineTo(x + 45, y);
+    ctx.stroke();
+    
+    // Brillos
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.beginPath();
+    ctx.ellipse(x - 15, y - 20, 15, 8, -Math.PI / 4, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Texto mejorado
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+    ctx.shadowBlur = 2;
+    ctx.fillStyle = '#2E7D32';
+    ctx.font = 'bold 28px Inter';
     ctx.textAlign = 'center';
-    ctx.fillText('ProBioBalance Plus', x, y - 80);
+    ctx.fillText('ProBioBalance Plus', x, y - 90);
     
-    ctx.font = '16px Inter';
-    ctx.fillText('1 cápsula al día', x, y + 80);
+    ctx.font = '18px Inter';
+    ctx.fillStyle = '#666';
+    ctx.fillText('1 cápsula al día con alimentos', x, y + 90);
+    
+    // Ícono de escudo de salud
+    ctx.font = '40px Inter';
+    ctx.fillText('🛡️', x, y - 130);
     
     ctx.restore();
   };
@@ -282,21 +379,51 @@ export default function App() {
   const drawIntestine = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
     ctx.save();
     
-    ctx.strokeStyle = '#2196F3';
-    ctx.lineWidth = 20;
+    // Sombra suave
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetY = 8;
     
-    // Forma de intestino
+    // Gradiente para el intestino
+    const gradient = ctx.createLinearGradient(x - 200, y, x + 200, y);
+    gradient.addColorStop(0, '#64B5F6');
+    gradient.addColorStop(0.5, '#2196F3');
+    gradient.addColorStop(1, '#1976D2');
+    
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 30;
+    ctx.lineCap = 'round';
+    
+    // Forma ondulada del intestino
     ctx.beginPath();
     ctx.moveTo(x - 200, y);
-    ctx.quadraticCurveTo(x - 100, y - 50, x, y);
-    ctx.quadraticCurveTo(x + 100, y + 50, x + 200, y);
+    ctx.bezierCurveTo(x - 150, y - 40, x - 100, y - 40, x - 50, y);
+    ctx.bezierCurveTo(x, y + 40, x + 50, y + 40, x + 100, y);
+    ctx.bezierCurveTo(x + 150, y - 40, x + 200, y - 40, x + 200, y);
     ctx.stroke();
     
-    // Texto
-    ctx.fillStyle = '#333';
-    ctx.font = '20px Inter';
+    // Líneas internas para dar textura
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#1565C0';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    
+    ctx.beginPath();
+    ctx.moveTo(x - 190, y);
+    ctx.bezierCurveTo(x - 140, y - 35, x - 90, y - 35, x - 40, y);
+    ctx.bezierCurveTo(x + 10, y + 35, x + 60, y + 35, x + 110, y);
+    ctx.bezierCurveTo(x + 160, y - 35, x + 190, y - 35, x + 190, y);
+    ctx.stroke();
+    
+    ctx.setLineDash([]);
+    
+    // Texto mejorado
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+    ctx.shadowBlur = 2;
+    ctx.fillStyle = '#1565C0';
+    ctx.font = 'bold 24px Inter';
     ctx.textAlign = 'center';
-    ctx.fillText('Tu intestino', x, y - 80);
+    ctx.fillText('Tu sistema digestivo', x, y - 80);
     
     ctx.restore();
   };
@@ -335,33 +462,64 @@ export default function App() {
     ctx.save();
     
     const positions = [
-      { x: x - 100, y: y },
-      { x: x, y: y - 50 },
-      { x: x + 100, y: y },
-      { x: x - 50, y: y + 50 },
-      { x: x + 50, y: y + 50 }
+      { x: x - 100, y: y, color: '#4CAF50', scale: 1.2 },
+      { x: x, y: y - 50, color: '#66BB6A', scale: 1 },
+      { x: x + 100, y: y, color: '#81C784', scale: 0.8 },
+      { x: x - 50, y: y + 50, color: '#4CAF50', scale: 0.9 },
+      { x: x + 50, y: y + 50, color: '#66BB6A', scale: 1.1 }
     ];
     
-    ctx.fillStyle = '#4CAF50';
+    // Sombras suaves
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 5;
     
-    positions.forEach(pos => {
+    positions.forEach((pos, i) => {
+      // Cuerpo de la bacteria
+      const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 25 * pos.scale);
+      gradient.addColorStop(0, pos.color);
+      gradient.addColorStop(1, pos.color + '99');
+      
+      ctx.fillStyle = gradient;
       ctx.beginPath();
-      ctx.ellipse(pos.x, pos.y, 25, 15, Math.random() * Math.PI, 0, 2 * Math.PI);
+      ctx.ellipse(pos.x, pos.y, 25 * pos.scale, 15 * pos.scale, Math.PI / 4 + i * 0.5, 0, 2 * Math.PI);
       ctx.fill();
       
-      // Carita feliz
-      ctx.strokeStyle = '#2E7D32';
-      ctx.lineWidth = 2;
+      // Ojos
+      ctx.fillStyle = 'white';
+      ctx.shadowBlur = 0;
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 8, 0.2 * Math.PI, 0.8 * Math.PI);
+      ctx.arc(pos.x - 8 * pos.scale, pos.y - 3 * pos.scale, 4 * pos.scale, 0, 2 * Math.PI);
+      ctx.arc(pos.x + 8 * pos.scale, pos.y - 3 * pos.scale, 4 * pos.scale, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Pupilas
+      ctx.fillStyle = '#333';
+      ctx.beginPath();
+      ctx.arc(pos.x - 8 * pos.scale, pos.y - 3 * pos.scale, 2 * pos.scale, 0, 2 * Math.PI);
+      ctx.arc(pos.x + 8 * pos.scale, pos.y - 3 * pos.scale, 2 * pos.scale, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Sonrisa
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2 * pos.scale;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y + 2 * pos.scale, 8 * pos.scale, 0.2 * Math.PI, 0.8 * Math.PI);
       ctx.stroke();
     });
     
-    // Texto
-    ctx.fillStyle = '#333';
-    ctx.font = '20px Inter';
+    // Texto con mejor estilo
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+    ctx.shadowBlur = 2;
+    ctx.fillStyle = '#2E7D32';
+    ctx.font = 'bold 24px Inter';
     ctx.textAlign = 'center';
     ctx.fillText('Bacterias buenas', x, y - 100);
+    
+    ctx.font = '16px Inter';
+    ctx.fillStyle = '#666';
+    ctx.fillText('Tu intestino', x, y - 75);
     
     ctx.restore();
   };
@@ -369,56 +527,113 @@ export default function App() {
   const drawBalance = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
     ctx.save();
     
-    // Balanza equilibrada
-    ctx.strokeStyle = '#795548';
-    ctx.lineWidth = 6;
+    // Sombras
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 5;
     
-    // Base
+    // Base con gradiente
+    const baseGradient = ctx.createLinearGradient(x, y + 20, x, y + 80);
+    baseGradient.addColorStop(0, '#8D6E63');
+    baseGradient.addColorStop(1, '#5D4037');
+    
+    ctx.strokeStyle = baseGradient;
+    ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    
+    // Poste central
     ctx.beginPath();
     ctx.moveTo(x, y + 20);
-    ctx.lineTo(x, y + 60);
+    ctx.lineTo(x, y + 80);
     ctx.stroke();
     
-    // Brazo
+    // Base circular
+    ctx.fillStyle = baseGradient;
     ctx.beginPath();
-    ctx.moveTo(x - 100, y + 20);
-    ctx.lineTo(x + 100, y + 20);
+    ctx.ellipse(x, y + 85, 30, 8, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Brazo de la balanza
+    ctx.strokeStyle = '#795548';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(x - 120, y + 20);
+    ctx.lineTo(x + 120, y + 20);
     ctx.stroke();
     
-    // Platos al mismo nivel
-    ctx.strokeStyle = '#333';
+    // Punto de pivote
+    ctx.fillStyle = '#5D4037';
+    ctx.beginPath();
+    ctx.arc(x, y + 20, 10, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Platos
+    ctx.strokeStyle = '#424242';
     ctx.lineWidth = 3;
     
-    // Izquierdo
+    // Plato izquierdo
     ctx.beginPath();
-    ctx.moveTo(x - 100, y + 20);
-    ctx.lineTo(x - 100, y + 40);
+    ctx.moveTo(x - 120, y + 20);
+    ctx.lineTo(x - 120, y + 40);
     ctx.stroke();
-    ctx.strokeRect(x - 120, y + 40, 40, 5);
     
-    // Derecho
+    // Bandeja izquierda
+    ctx.fillStyle = '#E0E0E0';
     ctx.beginPath();
-    ctx.moveTo(x + 100, y + 20);
-    ctx.lineTo(x + 100, y + 40);
+    ctx.ellipse(x - 120, y + 45, 35, 6, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = '#9E9E9E';
+    ctx.lineWidth = 2;
     ctx.stroke();
-    ctx.strokeRect(x + 80, y + 40, 40, 5);
     
-    // Bacterias en equilibrio
-    ctx.fillStyle = '#E91E63';
+    // Plato derecho
+    ctx.strokeStyle = '#424242';
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(x - 100, y + 35, 8, 0, 2 * Math.PI);
+    ctx.moveTo(x + 120, y + 20);
+    ctx.lineTo(x + 120, y + 40);
+    ctx.stroke();
+    
+    // Bandeja derecha
+    ctx.fillStyle = '#E0E0E0';
+    ctx.beginPath();
+    ctx.ellipse(x + 120, y + 45, 35, 6, 0, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = '#9E9E9E';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Bacterias con mejor diseño
+    // Bacteria mala (izquierda)
+    const badGradient = ctx.createRadialGradient(x - 120, y + 35, 0, x - 120, y + 35, 15);
+    badGradient.addColorStop(0, '#E91E63');
+    badGradient.addColorStop(1, '#AD1457');
+    ctx.fillStyle = badGradient;
+    ctx.beginPath();
+    ctx.ellipse(x - 120, y + 35, 15, 10, Math.PI / 6, 0, 2 * Math.PI);
     ctx.fill();
     
-    ctx.fillStyle = '#4CAF50';
+    // Bacteria buena (derecha)
+    const goodGradient = ctx.createRadialGradient(x + 120, y + 35, 0, x + 120, y + 35, 15);
+    goodGradient.addColorStop(0, '#66BB6A');
+    goodGradient.addColorStop(1, '#2E7D32');
+    ctx.fillStyle = goodGradient;
     ctx.beginPath();
-    ctx.arc(x + 100, y + 35, 8, 0, 2 * Math.PI);
+    ctx.ellipse(x + 120, y + 35, 15, 10, -Math.PI / 6, 0, 2 * Math.PI);
     ctx.fill();
     
-    // Texto
-    ctx.fillStyle = '#333';
-    ctx.font = '20px Inter';
+    // Texto mejorado
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+    ctx.shadowBlur = 2;
+    ctx.fillStyle = '#2E7D32';
+    ctx.font = 'bold 26px Inter';
     ctx.textAlign = 'center';
     ctx.fillText('¡Equilibrio restaurado!', x, y - 60);
+    
+    // Subtítulo
+    ctx.font = '16px Inter';
+    ctx.fillStyle = '#666';
+    ctx.fillText('Flora intestinal balanceada', x, y - 35);
     
     ctx.restore();
   };
