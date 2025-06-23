@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/animatedsubtitles.tsx","./src/components/audiotimeline.tsx","./src/components/dynamicvisualization.tsx","./src/components/scene3d.tsx","./src/services/openai.ts","./src/services/streamingai.ts"],"version":"5.6.3"}
