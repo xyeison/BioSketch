@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { 
   Text, 
@@ -7,9 +7,6 @@ import {
   PerspectiveCamera,
   RoundedBox,
   Sphere,
-  Torus,
-  Cone,
-  Box,
   Ring,
   MeshDistortMaterial,
   MeshTransmissionMaterial,
@@ -270,8 +267,6 @@ function Relief() {
       <Cloud
         opacity={0.5}
         speed={0.4}
-        width={10}
-        depth={1.5}
         segments={20}
       />
       <Stars radius={100} depth={50} count={1000} factor={4} fade speed={1} />
