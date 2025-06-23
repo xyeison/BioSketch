@@ -5,6 +5,18 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 
+// Voces disponibles en OpenAI TTS
+export const OPENAI_VOICES = {
+  alloy: 'alloy',      // Neutral
+  echo: 'echo',        // Masculina
+  fable: 'fable',      // Británica
+  onyx: 'onyx',        // Masculina profunda
+  nova: 'nova',        // Femenina joven
+  shimmer: 'shimmer'   // Femenina suave
+} as const;
+
+export type OpenAIVoice = typeof OPENAI_VOICES[keyof typeof OPENAI_VOICES];
+
 export interface AIResponse {
   response: string;
   drawings: string[];
@@ -95,5 +107,46 @@ export async function getAIResponse(userInput: string): Promise<AIResponse> {
       response: "Disculpa, hubo un problema al procesar tu consulta. ProBioBalance Plus es un excelente probiótico que puede ayudarte con diversos problemas digestivos. ¿Podrías decirme más específicamente qué molestias tienes?",
       drawings: ['probiotico']
     };
+  }
+}
+
+export async function generateSpeech(
+  text: string, 
+  voice: OpenAIVoice = OPENAI_VOICES.nova
+): Promise<ArrayBuffer> {
+  try {
+    const response = await openai.audio.speech.create({
+      model: "tts-1",
+      voice: voice,
+      input: text,
+      speed: 0.95
+    });
+
+    // Convertir la respuesta a ArrayBuffer
+    const arrayBuffer = await response.arrayBuffer();
+    return arrayBuffer;
+  } catch (error) {
+    console.error('Error generando audio con OpenAI:', error);
+    throw error;
+  }
+}
+
+export async function generateSpeechUrl(
+  text: string,
+  voice: OpenAIVoice = OPENAI_VOICES.nova
+): Promise<string> {
+  try {
+    const arrayBuffer = await generateSpeech(text, voice);
+    
+    // Convertir ArrayBuffer a Blob
+    const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+    
+    // Crear URL del blob
+    const url = URL.createObjectURL(blob);
+    
+    return url;
+  } catch (error) {
+    console.error('Error generando URL de audio:', error);
+    throw error;
   }
 }

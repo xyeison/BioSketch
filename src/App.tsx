@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IconMicrophone, IconMicrophoneOff } from '@tabler/icons-react';
-import { getAIResponse } from './services/openai';
+import { getAIResponse, generateSpeechUrl, OPENAI_VOICES } from './services/openai';
 import Scene3D from './components/Scene3D';
 import AudioTimeline from './components/AudioTimeline';
 import './App.css';
@@ -23,9 +23,12 @@ export default function App() {
   const [currentDrawing, setCurrentDrawing] = useState('probiotico');
   const [timelineEvents, setTimelineEvents] = useState<Array<{time: number, drawing: string}>>([]);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [useOpenAIVoice, setUseOpenAIVoice] = useState(true);
+  const [selectedVoice, setSelectedVoice] = useState(OPENAI_VOICES.nova);
   
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     setupVoiceRecognition();
@@ -167,7 +170,51 @@ export default function App() {
     speakText(responseText);
   };
 
-  const speakText = (text: string) => {
+  const speakText = async (text: string) => {
+    if (useOpenAIVoice) {
+      try {
+        // Generar audio con OpenAI
+        const audioUrl = await generateSpeechUrl(text, selectedVoice);
+        
+        // Crear elemento de audio
+        if (audioRef.current) {
+          audioRef.current.pause();
+          URL.revokeObjectURL(audioRef.current.src);
+        }
+        
+        const audio = new Audio(audioUrl);
+        audioRef.current = audio;
+        
+        audio.onplay = () => {
+          setIsAudioPlaying(true);
+        };
+        
+        audio.onended = () => {
+          setIsAudioPlaying(false);
+          setTimeout(() => {
+            setVoiceStatus('inactive');
+          }, 500);
+          URL.revokeObjectURL(audioUrl);
+        };
+        
+        audio.onerror = () => {
+          console.error('Error reproduciendo audio de OpenAI');
+          // Fallback a síntesis de voz del navegador
+          speakWithBrowserTTS(text);
+        };
+        
+        await audio.play();
+      } catch (error) {
+        console.error('Error con OpenAI TTS:', error);
+        // Fallback a síntesis de voz del navegador
+        speakWithBrowserTTS(text);
+      }
+    } else {
+      speakWithBrowserTTS(text);
+    }
+  };
+  
+  const speakWithBrowserTTS = (text: string) => {
     if (synthRef.current && 'speechSynthesis' in window) {
       synthRef.current.text = text;
       
@@ -196,6 +243,30 @@ export default function App() {
               <h2>{PROBIOTIC_INFO.botName}</h2>
               <p>Asistente de Salud Digestiva</p>
             </div>
+          </div>
+          
+          <div className="voice-settings">
+            <label className="voice-toggle">
+              <input
+                type="checkbox"
+                checked={useOpenAIVoice}
+                onChange={(e) => setUseOpenAIVoice(e.target.checked)}
+              />
+              <span>Usar voz HD de OpenAI</span>
+            </label>
+            
+            {useOpenAIVoice && (
+              <select
+                value={selectedVoice}
+                onChange={(e) => setSelectedVoice(e.target.value as any)}
+                className="voice-selector"
+              >
+                <option value={OPENAI_VOICES.nova}>Nova (Femenina joven)</option>
+                <option value={OPENAI_VOICES.shimmer}>Shimmer (Femenina suave)</option>
+                <option value={OPENAI_VOICES.alloy}>Alloy (Neutral)</option>
+                <option value={OPENAI_VOICES.fable}>Fable (Británica)</option>
+              </select>
+            )}
           </div>
           
           <div className="conversation-area">
